@@ -141,8 +141,8 @@ void insert_thread_killers(int num_threads)
 
     for (i = 0; i < num_threads; i++)
     {
-        new_worker = create_queue_node(NULL, TRUE); // create thread killer node
-        work_queue = append_worker_to_queue(work_queue, new_worker);
+        new_worker = create_worker_node(NULL, TRUE); // create thread killer node
+        work_queue = append_worker_to_queue(new_worker);
         pthread_cond_broadcast(&cond);
     }
 }

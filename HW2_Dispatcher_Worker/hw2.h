@@ -61,15 +61,15 @@ void Wait_for_pending_workers();
 void insert_thread_killers(int num_threads);
 
 // worker - basic commands linked list
-Basic_CMD *create_worker_node(char *command, int num);
+Basic_CMD *create_command_node(char *command, int num);
 Basic_CMD *append_cmd_to_worker(Basic_CMD *worker, Basic_CMD *new_cmd);
-void delete_worker_list(Basic_CMD *Worker);
+void delete_commands_list(Basic_CMD *commands);
 Basic_CMD *array_to_cmd_list(char *args[]);
 
 // work queue - workers linked list
-Worker *create_queue_node(Basic_CMD *commands, int kill);
-Worker *append_worker_to_queue(Worker *queue, Worker *new_worker);
-void delete_queue_list(Worker *queue);
+Worker *create_worker_node(Basic_CMD *commands, int kill);
+Worker *append_worker_to_queue(Worker *new_worker);
+void delete_workers_list();
 
 // stats
 void create_thread_logfile(int thread_num);

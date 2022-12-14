@@ -122,7 +122,7 @@ void delete_queue_and_write_stats()
 
         // Delete current node
         next = cur_work->next;
-        delete_worker_list(cur_work->commands);
+        delete_commands_list(cur_work->commands);
         free(cur_work);
         cur_work = next;
     }

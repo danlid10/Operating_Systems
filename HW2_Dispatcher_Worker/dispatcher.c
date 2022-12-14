@@ -5,7 +5,7 @@ void dispatcher(char cmdfilename[])
     char line[MAX_CMD_LINE];
     char *args[MAX_BASIC_ARGS];
     Basic_CMD *cmd_lst = NULL;
-    Worker *queue_node = NULL;
+    Worker *new_worker = NULL;
     FILE *fp;
     
     fp = fopen(cmdfilename, "r");
@@ -32,9 +32,9 @@ void dispatcher(char cmdfilename[])
         if (!strcmp(args[0], "worker"))
         {
             cmd_lst = array_to_cmd_list(args);
-            queue_node = create_queue_node(cmd_lst, FALSE);
-            work_queue = append_worker_to_queue(work_queue, queue_node);
-            gettimeofday(&queue_node->start_turnaround_time, NULL);
+            new_worker = create_worker_node(cmd_lst, FALSE);
+            work_queue = append_worker_to_queue(new_worker);
+            gettimeofday(&new_worker->start_turnaround_time, NULL);
             pthread_cond_broadcast(&cond);
         }
         else if (!strcmp(args[0], "dispatcher_msleep"))
