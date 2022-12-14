@@ -5,6 +5,8 @@ void *routine(void *arg)
     Worker *my_work = NULL;
     int thread_num = *(int *)arg;
 
+    free(arg);
+
     if (log_enabled == 1)
         create_thread_logfile(thread_num);
 
@@ -33,8 +35,6 @@ void *routine(void *arg)
 
     } while (my_work->kill == FALSE);
 
-    free(arg);
-    
     return NULL;
 }
 

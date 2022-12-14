@@ -1,5 +1,6 @@
 #include "hw2.h"
 
+// Split line to arguments delimited by whitespaces or semicolon.
 void split_line(char line[], char *args[])
 {
     char *token;

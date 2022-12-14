@@ -75,7 +75,7 @@ Worker *create_queue_node(Basic_CMD *commands, int kill)
     return new_worker;
 }
 
-// insert worker node to queue list at the end
+// Insert worker node to queue list at the end
 Worker *append_worker_to_queue(Worker *queue, Worker *new_worker)
 {
     Worker *last_node;
@@ -94,8 +94,7 @@ Worker *append_worker_to_queue(Worker *queue, Worker *new_worker)
 
 void delete_queue_list(Worker *queue)
 {
-    Worker *current = queue;
-    Worker *next;
+    Worker *current = queue, *next;
 
     while (current != NULL)
     {
@@ -105,4 +104,3 @@ void delete_queue_list(Worker *queue)
         current = next;
     }
 }
-

@@ -1,6 +1,6 @@
 #include "hw2.h"
 
-// Prints worker to FILE stream (stdout for printf)
+// Print worker to FILE stream (stdout for printf)
 void print_worker(Worker *worker, FILE *stream)
 {
     Basic_CMD *cur_cmd = worker->commands;
@@ -96,11 +96,11 @@ void append_dispatcher_log(char line[])
     fclose(fp);
 }
 
-// Create and write timing data to stats file.
-void write_workers_stats()
+// Create and write timing data to stats file, delete global work queue.
+void delete_queue_and_write_stats()
 {
-    Worker *cur_work = work_queue;
-    long long total_runtime_ms, turnaround_runtime_ms;
+    Worker *cur_work = work_queue, *next;
+    long long runtime_ms;
     long long min_job = LLONG_MAX, max_job = 0, sum_jobs = 0, job_count = 0;
     float avg_job;
     struct timeval end_time;
@@ -108,17 +108,25 @@ void write_workers_stats()
 
     while (cur_work != NULL)
     {
-        turnaround_runtime_ms = calc_runtime_ms(&cur_work->start_turnaround_time, &cur_work->end_turnaround_time);
+        // Calculate and update timing data for current node
+        if (cur_work->kill == FALSE)
+        {
+            job_count++;
+            runtime_ms = calc_runtime_ms(&cur_work->start_turnaround_time, &cur_work->end_turnaround_time);
+            sum_jobs += runtime_ms;
+            if (runtime_ms < min_job)
+                min_job = runtime_ms;
+            if (runtime_ms > max_job)
+                max_job = runtime_ms;
+        }
 
-        job_count++;
-        sum_jobs += turnaround_runtime_ms;
-        if (turnaround_runtime_ms < min_job)
-            min_job = turnaround_runtime_ms;
-        if (turnaround_runtime_ms > max_job)
-            max_job = turnaround_runtime_ms;
-
-        cur_work = cur_work->next;
+        // Delete current node
+        next = cur_work->next;
+        delete_worker_list(cur_work->commands);
+        free(cur_work);
+        cur_work = next;
     }
+
     avg_job = (float)sum_jobs / job_count;
 
     fp = fopen("stats.txt", "w");
@@ -128,10 +136,12 @@ void write_workers_stats()
         exit(-1);
     }
 
+    // Calcualte total runtime in ms
     gettimeofday(&end_time, NULL);
-    total_runtime_ms = calc_runtime_ms(&start_time, &end_time);
+    runtime_ms = calc_runtime_ms(&start_time, &end_time);
 
-    fprintf(fp, "total running time: %lld milliseconds\n", total_runtime_ms);
+    // Print stats to file
+    fprintf(fp, "total running time: %lld milliseconds\n", runtime_ms);
     fprintf(fp, "sum of jobs turnaround time: %lld milliseconds\n", sum_jobs);
     fprintf(fp, "min job turnaround time: %lld milliseconds\n", min_job);
     fprintf(fp, "average job turnaround time: %f milliseconds\n", avg_job);

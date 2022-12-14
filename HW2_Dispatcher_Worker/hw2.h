@@ -78,7 +78,8 @@ void append_thread_log(int thread_num, Worker *my_work, char start_end[]);
 long long calc_runtime_ms(struct timeval *start_time, struct timeval *end_time);
 void create_dispatcher_logfile();
 void append_dispatcher_log(char line[]);
-void write_workers_stats();
+void delete_queue_and_write_stats();
+
 
 // gloabal variables
 extern Worker *work_queue;

@@ -46,12 +46,11 @@ int main(int argc, char *argv[])
 
     dispatcher(argv[1]);
     Wait_for_pending_workers();
-    write_workers_stats();
 
     // Clean up
     insert_thread_killers(num_threads);
     wait_threads(threads, num_threads);
-    delete_queue_list(work_queue);
+    delete_queue_and_write_stats();
 
     return 0;
 }
