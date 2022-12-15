@@ -1,4 +1,4 @@
 all: hw1shell.c
-	gcc -g hw1shell.c -o hw1shell
+	gcc -g -Wall -o hw1shell hw1shell.c 
 clean:
 	\rm hw1shell
