@@ -55,7 +55,7 @@ void dispatcher(char cmdfilename[]);
 pthread_t *init_threads(pthread_t *threads, int num_threads);
 void wait_threads(pthread_t *threads, int num_threads);
 void *routine(void *arg);
-void execeute_worker(Worker *my_work);
+void execeute_worker(Worker *my_work, int thread_num);
 Worker *find_available_job();
 void Wait_for_pending_workers();
 void insert_thread_killers(int num_threads);

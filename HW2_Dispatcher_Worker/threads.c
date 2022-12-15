@@ -7,33 +7,28 @@ void *routine(void *arg)
 
     free(arg);
 
+    // Create thread log file
     if (log_enabled == 1)
         create_thread_logfile(thread_num);
 
     do
     {
+        // lock the queue mutex to deny other threads access to the global work queue
         pthread_mutex_lock(&queue_mutex);
 
         while ((my_work = find_available_job()) == NULL) // wait for available job
-            pthread_cond_wait(&cond, &queue_mutex);
+            pthread_cond_wait(&cond, &queue_mutex);      // wait for broadcast from the dispatcher
 
-        my_work->state = taken;
+        my_work->state = taken; // mark the found available job as 'taken'
 
+        // unlock the queue mutex to give other threads access to the global work queue
         pthread_mutex_unlock(&queue_mutex);
 
-        if (log_enabled == 1 && my_work->kill == FALSE)
-            append_thread_log(thread_num, my_work, "START");
+        execeute_worker(my_work, thread_num); // execute work
 
-        execeute_worker(my_work);
+        my_work->state = done; // mark finished job as 'done'
 
-        gettimeofday(&my_work->end_turnaround_time, NULL);
-
-        my_work->state = done;
-
-        if (log_enabled == 1 && my_work->kill == FALSE)
-            append_thread_log(thread_num, my_work, "END");
-
-    } while (my_work->kill == FALSE);
+    } while (my_work->kill == FALSE); // continue looping until get 'kill' job
 
     return NULL;
 }
@@ -52,11 +47,15 @@ Worker *find_available_job()
     return NULL;
 }
 
-void execeute_worker(Worker *my_work)
+void execeute_worker(Worker *my_work, int thread_num)
 {
     Basic_CMD *cur_cmd = my_work->commands;
     Basic_CMD *rep_start = NULL;
     int rep_count = 0;
+
+    // append START timing data to thread log file
+    if (log_enabled == 1 && my_work->kill == FALSE)
+        append_thread_log(thread_num, my_work, "START");
 
     while (cur_cmd != NULL)
     {
@@ -86,6 +85,13 @@ void execeute_worker(Worker *my_work)
             rep_count--;
         }
     }
+
+    // append END timing data to thread log file
+    if (log_enabled == 1 && my_work->kill == FALSE)
+        append_thread_log(thread_num, my_work, "END");
+
+    // update work's end turnaround time
+    gettimeofday(&my_work->end_turnaround_time, NULL);
 }
 
 pthread_t *init_threads(pthread_t *threads, int num_threads)
@@ -100,6 +106,7 @@ pthread_t *init_threads(pthread_t *threads, int num_threads)
 
     for (i = 0; i < num_threads; i++)
     {
+        // allocate memory to pass the thread number to the thread routine
         thread_num = (int *)malloc(sizeof(int));
         if (thread_num == NULL)
         {
@@ -153,7 +160,7 @@ void Wait_for_pending_workers()
 
     while (cur_work != NULL)
     {
-        while (cur_work->state != done);
+        while (cur_work->state != done); // wait until work state is 'done'
         cur_work = cur_work->next;
     }
 }
