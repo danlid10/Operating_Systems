@@ -32,7 +32,7 @@ void create_thread_logfile(int thread_num)
 }
 
 // Append timing data to thread_num log file.
-void append_thread_log(int thread_num, Worker *my_work, char start_end[])
+void append_thread_log(Worker *my_work, int thread_num, struct timeval *start_time, char start_end[])
 {
     FILE *fp;
     char file_name[MAX_FILENAME];
@@ -40,7 +40,7 @@ void append_thread_log(int thread_num, Worker *my_work, char start_end[])
     struct timeval end_time;
 
     gettimeofday(&end_time, NULL);
-    runtime_ms = calc_runtime_ms(&start_time, &end_time);
+    runtime_ms = calc_runtime_ms(start_time, &end_time);
 
     sprintf(file_name, "thread%04d.txt", thread_num);
     fp = fopen(file_name, "a");
@@ -75,14 +75,14 @@ void create_dispatcher_logfile()
 }
 
 // Append timing data to the dispatcher log file.
-void append_dispatcher_log(char line[])
+void append_dispatcher_log(char line[], struct timeval *start_time)
 {
     struct timeval end_time;
     long long runtime_ms;
     FILE *fp;
 
     gettimeofday(&end_time, NULL);
-    runtime_ms = calc_runtime_ms(&start_time, &end_time);
+    runtime_ms = calc_runtime_ms(start_time, &end_time);
 
     fp = fopen("dispatcher.txt", "a");
     if (fp == NULL)
@@ -97,7 +97,7 @@ void append_dispatcher_log(char line[])
 }
 
 // Create and write timing data to stats file, delete global work queue.
-void delete_queue_and_write_stats()
+void delete_queue_and_write_stats(struct timeval *start_time)
 {
     Worker *cur_work = work_queue, *next;
     long long runtime_ms;
@@ -138,7 +138,7 @@ void delete_queue_and_write_stats()
 
     // Calcualte total runtime in ms
     gettimeofday(&end_time, NULL);
-    runtime_ms = calc_runtime_ms(&start_time, &end_time);
+    runtime_ms = calc_runtime_ms(start_time, &end_time);
 
     // Print stats to file
     fprintf(fp, "total running time: %lld milliseconds\n", runtime_ms);

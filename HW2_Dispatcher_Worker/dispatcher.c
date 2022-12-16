@@ -1,13 +1,13 @@
 #include "hw2.h"
 
-void dispatcher(char cmdfilename[])
+void dispatcher(char cmdfilename[], int log_enabled, struct timeval *start_time)
 {
     char line[MAX_CMD_LINE];
     char *args[MAX_BASIC_ARGS];
     Basic_CMD *cmd_lst = NULL;
     Worker *new_worker = NULL;
     FILE *fp;
-    
+
     fp = fopen(cmdfilename, "r");
     if (fp == NULL)
     {
@@ -22,7 +22,7 @@ void dispatcher(char cmdfilename[])
     {
 
         if (log_enabled == 1)
-            append_dispatcher_log(line);
+            append_dispatcher_log(line, start_time);
 
         split_line(line, args);
 
@@ -35,7 +35,7 @@ void dispatcher(char cmdfilename[])
             new_worker = create_worker_node(cmd_lst, FALSE);
             work_queue = append_worker_to_queue(new_worker);
             gettimeofday(&new_worker->start_turnaround_time, NULL);
-            pthread_cond_broadcast(&cond);
+            pthread_cond_broadcast(&cond);  // wake up sleeping threads
         }
         else if (!strcmp(args[0], "dispatcher_msleep"))
         {

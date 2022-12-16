@@ -38,7 +38,7 @@ void inc_dec_counter(int counter_n, enum counter_action inc_dec)
         printf("[ERROR] File \"%s\": %s\n", file_name, strerror(errno));
         exit(-1);
     }
-    fgets(num_str, MAX_FILENAME, fp);
+    fgets(num_str, MAX_COUNTER_CHARS, fp);
     fclose(fp);
 
     // increase or decrease counter n

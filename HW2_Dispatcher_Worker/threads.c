@@ -3,7 +3,12 @@
 void *routine(void *arg)
 {
     Worker *my_work = NULL;
-    int thread_num = *(int *)arg;
+    Thread_args *arguments = (Thread_args *)arg;
+    int thread_num = arguments->thread_num;
+    int log_enabled = arguments->log_enabled;
+    struct timeval prog_start_time;
+    prog_start_time.tv_sec = arguments->prog_start_time->tv_sec;
+    prog_start_time.tv_usec = arguments->prog_start_time->tv_usec;
 
     free(arg);
 
@@ -24,7 +29,7 @@ void *routine(void *arg)
         // unlock the queue mutex to give other threads access to the global work queue
         pthread_mutex_unlock(&queue_mutex);
 
-        execeute_worker(my_work, thread_num); // execute work
+        execeute_worker(my_work, thread_num, log_enabled, &prog_start_time); // execute work
 
         my_work->state = done; // mark finished job as 'done'
 
@@ -47,7 +52,7 @@ Worker *find_available_job()
     return NULL;
 }
 
-void execeute_worker(Worker *my_work, int thread_num)
+void execeute_worker(Worker *my_work, int thread_num, int log_enabled, struct timeval *start_time)
 {
     Basic_CMD *cur_cmd = my_work->commands;
     Basic_CMD *rep_start = NULL;
@@ -55,7 +60,7 @@ void execeute_worker(Worker *my_work, int thread_num)
 
     // append START timing data to thread log file
     if (log_enabled == 1 && my_work->kill == FALSE)
-        append_thread_log(thread_num, my_work, "START");
+        append_thread_log(my_work, thread_num, start_time, "START");
 
     while (cur_cmd != NULL)
     {
@@ -88,15 +93,18 @@ void execeute_worker(Worker *my_work, int thread_num)
 
     // append END timing data to thread log file
     if (log_enabled == 1 && my_work->kill == FALSE)
-        append_thread_log(thread_num, my_work, "END");
+        append_thread_log(my_work, thread_num, start_time, "END");
 
     // update work's end turnaround time
     gettimeofday(&my_work->end_turnaround_time, NULL);
 }
 
-pthread_t *init_threads(pthread_t *threads, int num_threads)
+pthread_t *init_threads(int num_threads, int log_enabled, struct timeval *prog_start_time)
 {
-    int i, error, *thread_num;
+    int i, error;
+    pthread_t *threads = NULL;
+    Thread_args *arg;
+
     threads = (pthread_t *)malloc(sizeof(pthread_t) * num_threads);
     if (threads == NULL)
     {
@@ -106,16 +114,18 @@ pthread_t *init_threads(pthread_t *threads, int num_threads)
 
     for (i = 0; i < num_threads; i++)
     {
-        // allocate memory to pass the thread number to the thread routine
-        thread_num = (int *)malloc(sizeof(int));
-        if (thread_num == NULL)
+        // allocate memory to pass the argument struct to the thread routine
+        arg = (Thread_args *)malloc(sizeof(Thread_args));
+        if (arg == NULL)
         {
             printf("[ERROR] malloc failed\n");
             exit(-1);
         }
-        *thread_num = i;
+        arg->thread_num = i;
+        arg->log_enabled = log_enabled;
+        arg->prog_start_time = prog_start_time;
 
-        error = pthread_create(&threads[i], NULL, &routine, thread_num);
+        error = pthread_create(&threads[i], NULL, &routine, (void *)arg);
         if (error != 0)
         {
             printf("[ERROR] pthread_create failed: error %d - %s\n", error, strerror(error));
@@ -141,6 +151,7 @@ void wait_threads(pthread_t *threads, int num_threads)
     free(threads);
 }
 
+// Insert num_threads thread killers jobs to the global work queue.
 void insert_thread_killers(int num_threads)
 {
     int i;
@@ -148,12 +159,13 @@ void insert_thread_killers(int num_threads)
 
     for (i = 0; i < num_threads; i++)
     {
-        new_worker = create_worker_node(NULL, TRUE); // create thread killer node
+        new_worker = create_worker_node(NULL, TRUE); // create thread killer worker
         work_queue = append_worker_to_queue(new_worker);
         pthread_cond_broadcast(&cond);
     }
 }
 
+// Wait for all pending works to get done.
 void Wait_for_pending_workers()
 {
     Worker *cur_work = work_queue;
