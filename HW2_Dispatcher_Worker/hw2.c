@@ -45,7 +45,6 @@ int main(int argc, char *argv[])
 
     // Dispatcher
     dispatcher(argv[1], log_enabled, &prog_start_time);
-    // Wait_for_pending_workers();
 
     // Clean up
     insert_thread_killers(num_threads);
