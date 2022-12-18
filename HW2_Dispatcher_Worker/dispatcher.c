@@ -35,7 +35,7 @@ void dispatcher(char cmdfilename[], int log_enabled, struct timeval *start_time)
             new_worker = create_worker_node(cmd_lst, FALSE);
             work_queue = append_worker_to_queue(new_worker);
             gettimeofday(&new_worker->start_turnaround_time, NULL);
-            pthread_cond_broadcast(&cond);  // wake up sleeping threads
+            pthread_cond_broadcast(&cond); // wake up sleeping threads
         }
         else if (!strcmp(args[0], "dispatcher_msleep"))
         {

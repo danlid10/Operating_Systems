@@ -3,6 +3,7 @@ worker msleep 500;
 worker repeat 66; decrement 77;
 dispatcher_wait
 worker increment 1;
+worker repeat 3; increment 0; msleep 20;
 worker increment 2; increment 2; increment 2; increment 2; increment 2; 
 worker increment 3; msleep 20;
 worker decrement 3;

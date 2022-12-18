@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     log_enabled = atoi(argv[4]);
     if (log_enabled != 0 && log_enabled != 1)
     {
-        printf("[ERROR] Invalid command line arguments: log_enabled (%d) range is [0,1]'\n", log_enabled);
+        printf("[ERROR] Invalid command line arguments: log_enabled (%d) range is [0, 1]'\n", log_enabled);
         return -1;
     }
 
