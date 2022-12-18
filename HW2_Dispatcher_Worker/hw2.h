@@ -27,7 +27,7 @@ enum counter_action {inc, dec};
 // structs
 typedef struct Thread_args
 {
-    int thread_num, log_enabled;
+    int thread_id, log_enabled;
     struct timeval *prog_start_time;
 } Thread_args;
 
@@ -61,7 +61,7 @@ void dispatcher(char cmdfilename[], int log_enabled, struct timeval *start_time)
 pthread_t *init_threads(int num_threads, int log_enabled, struct timeval *prog_start_time);
 void wait_threads(pthread_t *threads, int num_threads);
 void *routine(void *arg);
-void execeute_worker(Worker *my_work, int thread_num, int log_enabled, struct timeval *start_time);
+void execeute_worker(Worker *my_work, int thread_id, int log_enabled, struct timeval *start_time);
 Worker *find_available_job();
 void Wait_for_pending_workers();
 void insert_thread_killers(int num_threads);
@@ -78,9 +78,9 @@ Worker *append_worker_to_queue(Worker *new_worker);
 void delete_workers_list();
 
 // stats
-void create_thread_logfile(int thread_num);
+void create_thread_logfile(int thread_id);
 void print_worker(Worker *worker, FILE *stream);
-void append_thread_log(Worker *my_work, int thread_num, struct timeval *start_time, char start_end[]);
+void append_thread_log(Worker *my_work, int thread_id, struct timeval *start_time, char start_end[]);
 long long calc_runtime_ms(struct timeval *start_time, struct timeval *end_time);
 void create_dispatcher_logfile();
 void append_dispatcher_log(char line[], struct timeval *start_time);

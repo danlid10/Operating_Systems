@@ -4,7 +4,7 @@ void *routine(void *arg)
 {
     Worker *my_work = NULL;
     Thread_args *arguments = (Thread_args *)arg;
-    int thread_num = arguments->thread_num;
+    int thread_id = arguments->thread_id;
     int log_enabled = arguments->log_enabled;
     struct timeval prog_start_time;
     prog_start_time.tv_sec = arguments->prog_start_time->tv_sec;
@@ -14,7 +14,7 @@ void *routine(void *arg)
 
     // Create thread log file
     if (log_enabled == 1)
-        create_thread_logfile(thread_num);
+        create_thread_logfile(thread_id);
 
     do
     {
@@ -29,7 +29,7 @@ void *routine(void *arg)
         // unlock the queue mutex to give other threads access to the global work queue
         pthread_mutex_unlock(&queue_mutex);
 
-        execeute_worker(my_work, thread_num, log_enabled, &prog_start_time); // execute work
+        execeute_worker(my_work, thread_id, log_enabled, &prog_start_time); // execute work
 
         my_work->state = done; // mark finished job as 'done'
 
@@ -52,7 +52,7 @@ Worker *find_available_job()
     return NULL;
 }
 
-void execeute_worker(Worker *my_work, int thread_num, int log_enabled, struct timeval *start_time)
+void execeute_worker(Worker *my_work, int thread_id, int log_enabled, struct timeval *start_time)
 {
     Basic_CMD *cur_cmd = my_work->commands;
     Basic_CMD *rep_start = NULL;
@@ -60,7 +60,7 @@ void execeute_worker(Worker *my_work, int thread_num, int log_enabled, struct ti
 
     // append START timing data to thread log file
     if (log_enabled == 1 && my_work->kill == FALSE)
-        append_thread_log(my_work, thread_num, start_time, "START");
+        append_thread_log(my_work, thread_id, start_time, "START");
 
     while (cur_cmd != NULL)
     {
@@ -84,7 +84,7 @@ void execeute_worker(Worker *my_work, int thread_num, int log_enabled, struct ti
 
         cur_cmd = cur_cmd->next;
 
-        if (cur_cmd == NULL && rep_count > 0)
+        if (cur_cmd == NULL && rep_count > 0) // repeat loop
         {
             cur_cmd = rep_start;
             rep_count--;
@@ -93,7 +93,7 @@ void execeute_worker(Worker *my_work, int thread_num, int log_enabled, struct ti
 
     // append END timing data to thread log file
     if (log_enabled == 1 && my_work->kill == FALSE)
-        append_thread_log(my_work, thread_num, start_time, "END");
+        append_thread_log(my_work, thread_id, start_time, "END");
 
     // update work's end turnaround time
     gettimeofday(&my_work->end_turnaround_time, NULL);
@@ -121,7 +121,7 @@ pthread_t *init_threads(int num_threads, int log_enabled, struct timeval *prog_s
             printf("[ERROR] malloc failed\n");
             exit(-1);
         }
-        arg->thread_num = i;
+        arg->thread_id = i;
         arg->log_enabled = log_enabled;
         arg->prog_start_time = prog_start_time;
 

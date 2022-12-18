@@ -15,13 +15,13 @@ void print_worker(Worker *worker, FILE *stream)
     fprintf(stream, "\n");
 }
 
-// Create log file for thread thread_num.
-void create_thread_logfile(int thread_num)
+// Create log file for thread thread_id.
+void create_thread_logfile(int thread_id)
 {
     FILE *fp;
     char file_name[MAX_FILENAME];
 
-    sprintf(file_name, "thread%04d.txt", thread_num);
+    sprintf(file_name, "thread%04d.txt", thread_id);
     fp = fopen(file_name, "w");
     if (fp == NULL)
     {
@@ -31,8 +31,8 @@ void create_thread_logfile(int thread_num)
     fclose(fp);
 }
 
-// Append timing data to thread_num log file.
-void append_thread_log(Worker *my_work, int thread_num, struct timeval *start_time, char start_end[])
+// Append timing data to thread_id log file.
+void append_thread_log(Worker *my_work, int thread_id, struct timeval *start_time, char start_end[])
 {
     FILE *fp;
     char file_name[MAX_FILENAME];
@@ -42,7 +42,7 @@ void append_thread_log(Worker *my_work, int thread_num, struct timeval *start_ti
     gettimeofday(&end_time, NULL);
     runtime_ms = calc_runtime_ms(start_time, &end_time);
 
-    sprintf(file_name, "thread%04d.txt", thread_num);
+    sprintf(file_name, "thread%04d.txt", thread_id);
     fp = fopen(file_name, "a");
     if (fp == NULL)
     {
