@@ -10,4 +10,4 @@
 > > - num_counters: number of counter files to create. Max 100.
 > > - log_enabled: 1 to write trace files, 0 witout trace files.
 
-### 3) 
+### 3) Homework 3: Adding system calls in xv6 
