@@ -14,6 +14,6 @@
 > **How to Run**: 
 > > Graphics Mode:  make -> make qemu-nox (to quit: Ctrl+A than X)  
 > > Text Mode: make -> make qemu  
-
+>
 > **Debugging in vs code**: Run Build Task (Ctrl+Shift+B) -> Start Debugging (F5)  
 > >  https://shawnzhong.com/2019/03/25/co-debug-xv6-on-windows-using-vscode/
