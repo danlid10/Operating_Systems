@@ -88,6 +88,8 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  // Initialize new process nrswitch to 0 
+  p->nrswitch = 0; 
 
   release(&ptable.lock);
 
@@ -199,9 +201,6 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
-
-  // Initialize new process nrswitch to 0 
-  np->nrswitch = 0; 
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
