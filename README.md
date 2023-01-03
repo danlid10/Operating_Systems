@@ -20,7 +20,7 @@
 
 
 > #### Running xv6:
-> > **How to Run**
+> > **How to Run:**  
 > >  Graphics Mode:  make -> make qemu-nox (to quit: Ctrl+A than X)  
 > > Text Mode: make -> make qemu  
 > >
