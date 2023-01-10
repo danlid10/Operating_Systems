@@ -8,10 +8,10 @@
         "-fdiagnostics-color=always",
         "-pthread",
         "-g",
+        "-Wall",
         "${workspaceFolder}/**.c",
         "${workspaceFolder}/**.h",
         "-o",
-        // "${fileDirname}/${fileBasenameNoExtension}",
         "${fileDirname}/hw2"
       ],
       "options": {
