@@ -17,6 +17,12 @@
 > #### 4) Homework 4: Adding priorities to xv6 scheduler
 
 > #### 5) Homework 5: Reading the xv6 filesystem in Linux  
+> The goal of this exercise is to write a user-space application, which will run under Linux (not
+under xv6), and be able to understand the xv6 filesystem internal data structures (superblock, inodes,
+directory entries, etc), to the point where we can:
+> 1. Display in Linux a listing of the xv6 root directory similar to the ls output from within xv6.
+> 2. Be able to exract a file from within the root directory in the xv6 filesytem image, and write it as
+a normal file in Linux.
 > > **How to Run**: The command syntax is one of the following two lines:  
 > > a) hw5 fs.img ls  
 > > b) hw5 fs.img cp xv6file linuxfile  
