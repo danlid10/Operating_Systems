@@ -32,11 +32,11 @@ We’ll modify xv6 such that each process is assigned a 3-bit exponential priori
 the lowest, and priority 7 is the highest.
 By default, all processes start with priority 0, but the priority can be changed using new system
 calls. We added system calls to xv6 to set/get process priorities. 
-> We changeed the xv6 scheduler to take the priority P into account. The priority indicates the base-2
-logarithm of the maximum number of consecutive timer ticks the process may get during the round-robin scanning of the processes. As long as the process is runnable (not sleeping), it should be scheduled $2^P$ times in sequence before considering the next process. If before the process finished its
-$2^P$ ticks, it needs to sleep waiting on some event and is not runnable, it should not be scheduled and
-the scheduler should continue in the round robin scanning of the next processes.
-We added a user-space program, *demosched.c*, which demonstrates the new scheduler priority.
+> We changeed the xv6 scheduler to take the priority P into account. 
+> The priority indicates the base-2 logarithm of the maximum number of consecutive timer ticks the process may get during the round-robin scanning of the processes.
+> As long as the process is runnable (not sleeping), it should be scheduled $2^P$ times in sequence before considering the next process.
+> If before the process finished its $2^P$ ticks, it needs to sleep waiting on some event and is not runnable, it should not be scheduled and the scheduler should continue in the round robin scanning of the next processes.  
+> We added a user-space program, *demosched.c*, which demonstrates the new scheduler priority.
 It forks multiple children that run CPU bound code, sets different priorities, and demonstrate that processes finish computation in accordance to the set priorities.
 
 > #### 5) Homework 5: Reading the xv6 filesystem in Linux  
