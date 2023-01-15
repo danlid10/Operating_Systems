@@ -46,8 +46,6 @@ directory entries, etc), to the point where we can:
 > 1. Display in Linux a listing of the xv6 root directory similar to the ls output from within xv6.
 > 2. Be able to exract a file from within the root directory in the xv6 filesytem image, and write it as
 a normal file in Linux.
-
-
 > > **How to Run**: The command syntax is one of the following two lines:  
 > > a) hw5 fs.img ls  
 > > b) hw5 fs.img cp xv6file linuxfile  
