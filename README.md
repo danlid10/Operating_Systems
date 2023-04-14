@@ -1,5 +1,5 @@
 # Introduction to Programming Systems Course 
-## [TAU] Tel Aviv University - Fall Semester 2022/2023
+## Tel Aviv University (TAU) - Fall Semester 2022/2023
 
 ### Processes and Threads:
 > #### 1) Homework 1: Build a shell under Linux
